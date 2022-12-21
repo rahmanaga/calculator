@@ -31,6 +31,10 @@ const operate = function (operator, num1, num2) {
     default:
       break;
   }
+
+  if (`${result}`.length > 7) {
+    return `${result.toFixed(5)}`;
+  }
   return `${result}`;
 };
 let displayValue = "0";
