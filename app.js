@@ -35,6 +35,7 @@ const operate = function (operator, num1, num2) {
 };
 let displayValue = "0";
 const displayArea = document.querySelector(".display");
+const clearBtn = document.querySelector(".clear");
 
 const digits = document.querySelectorAll(".digit");
 
@@ -88,4 +89,9 @@ equalSign.addEventListener("click", (e) => {
     displayValue = "0";
   }
   displayArea.textContent = displayValue;
+});
+
+clearBtn.addEventListener("click", () => {
+  displayValue = "0";
+  displayArea.textContent = "0";
 });
