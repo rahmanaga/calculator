@@ -37,6 +37,7 @@ let displayValue = "0";
 const displayArea = document.querySelector(".display");
 const allClearBtn = document.querySelector(".allClear");
 const clearBtn = document.querySelector(".clear");
+const decimalBtn = document.querySelector(".decimal");
 
 const digits = document.querySelectorAll(".digit");
 
@@ -49,6 +50,25 @@ digits.forEach((digit) => {
     }
     displayArea.textContent = displayValue;
   });
+});
+
+decimalBtn.addEventListener("click", (e) => {
+  if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
+    displayValue += "0.";
+  } else if (/[\.]/.test(displayValue)) {
+    if (/[\+\-\*/]/.test(displayValue)) {
+      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+      const lastNum = displayValue.split(matchedOperator)[1];
+      if (/[\.]/.test(lastNum)) {
+        return;
+      } else {
+        displayValue += ".";
+      }
+    }
+  } else {
+    displayValue += ".";
+  }
+  displayArea.textContent = displayValue;
 });
 
 const operators = document.querySelectorAll(".operator");
