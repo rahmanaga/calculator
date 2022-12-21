@@ -28,7 +28,7 @@ const operate = function (operator, num1, num2) {
     default:
       break;
   }
-  return result;
+  return `${result}`;
 };
 let displayValue = "0";
 
@@ -38,6 +38,24 @@ digits.forEach((digit) => {
   digit.addEventListener("click", (e) => {
     if (displayValue === "0") {
       displayValue = e.target.textContent;
+    } else {
+      displayValue += e.target.textContent;
+    }
+  });
+});
+
+const operators = document.querySelectorAll(".operator");
+
+operators.forEach((operator) => {
+  operator.addEventListener("click", (e) => {
+    if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
+      return;
+    }
+    if (/[\+\-\*/]/.test(displayValue)) {
+      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+      const [num1, num2] = displayValue.split(matchedOperator);
+      displayValue = operate(matchedOperator, +num1, +num2);
+      displayValue += e.target.textContent;
     } else {
       displayValue += e.target.textContent;
     }
