@@ -40,7 +40,6 @@ const digits = document.querySelectorAll(".digit");
 
 digits.forEach((digit) => {
   digit.addEventListener("click", (e) => {
-    error.textContent = "";
     if (displayValue === "0") {
       displayValue = e.target.textContent;
     } else {
@@ -51,7 +50,6 @@ digits.forEach((digit) => {
 });
 
 const operators = document.querySelectorAll(".operator");
-const error = document.querySelector(".errorText");
 
 operators.forEach((operator) => {
   operator.addEventListener("click", (e) => {
@@ -63,7 +61,7 @@ operators.forEach((operator) => {
       const [num1, num2] = displayValue.split(matchedOperator);
       displayValue = operate(matchedOperator, +num1, +num2);
       if (/Couldn't divide by zero/.test(displayValue)) {
-        error.textContent = "Couldn't divide by zero";
+        alert("Couldn't divide by zero");
         displayValue = "";
       } else {
         displayValue += e.target.textContent;
@@ -82,6 +80,10 @@ equalSign.addEventListener("click", (e) => {
     const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
     const [num1, num2] = displayValue.split(matchedOperator);
     displayValue = operate(matchedOperator, +num1, +num2);
+    if (/Couldn't divide by zero/.test(displayValue)) {
+      alert("Couldn't divide by zero");
+      displayValue = "";
+    }
   } else {
     displayValue = "0";
   }
