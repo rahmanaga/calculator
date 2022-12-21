@@ -31,6 +31,7 @@ const operate = function (operator, num1, num2) {
   return `${result}`;
 };
 let displayValue = "0";
+const displayArea = document.querySelector(".display");
 
 const digits = document.querySelectorAll(".digit");
 
@@ -41,6 +42,7 @@ digits.forEach((digit) => {
     } else {
       displayValue += e.target.textContent;
     }
+    displayArea.textContent = displayValue;
   });
 });
 
@@ -59,6 +61,7 @@ operators.forEach((operator) => {
     } else {
       displayValue += e.target.textContent;
     }
+    displayArea.textContent = displayValue;
   });
 });
 
@@ -72,4 +75,5 @@ equalSign.addEventListener("click", (e) => {
   } else {
     displayValue = "0";
   }
+  displayArea.textContent = displayValue;
 });
