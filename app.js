@@ -8,6 +8,9 @@ const multiply = function (num1, num2) {
   return num1 * num2;
 };
 const divide = function (num1, num2) {
+  if (num2 === 0) {
+    return "Couldn't divide by zero";
+  }
   return num1 / num2;
 };
 const operate = function (operator, num1, num2) {
@@ -37,6 +40,7 @@ const digits = document.querySelectorAll(".digit");
 
 digits.forEach((digit) => {
   digit.addEventListener("click", (e) => {
+    error.textContent = "";
     if (displayValue === "0") {
       displayValue = e.target.textContent;
     } else {
@@ -47,6 +51,7 @@ digits.forEach((digit) => {
 });
 
 const operators = document.querySelectorAll(".operator");
+const error = document.querySelector(".errorText");
 
 operators.forEach((operator) => {
   operator.addEventListener("click", (e) => {
@@ -57,7 +62,12 @@ operators.forEach((operator) => {
       const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
       const [num1, num2] = displayValue.split(matchedOperator);
       displayValue = operate(matchedOperator, +num1, +num2);
-      displayValue += e.target.textContent;
+      if (/Couldn't divide by zero/.test(displayValue)) {
+        error.textContent = "Couldn't divide by zero";
+        displayValue = "";
+      } else {
+        displayValue += e.target.textContent;
+      }
     } else {
       displayValue += e.target.textContent;
     }
