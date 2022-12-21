@@ -61,3 +61,15 @@ operators.forEach((operator) => {
     }
   });
 });
+
+const equalSign = document.querySelector(".equal");
+
+equalSign.addEventListener("click", (e) => {
+  if (/[0-9][\+\-\*/][0-9]/.test(displayValue)) {
+    const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+    const [num1, num2] = displayValue.split(matchedOperator);
+    displayValue = operate(matchedOperator, +num1, +num2);
+  } else {
+    displayValue = "0";
+  }
+});
