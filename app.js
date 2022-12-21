@@ -28,4 +28,5 @@ const operate = function (operator, num1, num2) {
     default:
       break;
   }
+  return result;
 };
