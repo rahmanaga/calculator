@@ -35,6 +35,7 @@ const operate = function (operator, num1, num2) {
 };
 let displayValue = "0";
 const displayArea = document.querySelector(".display");
+const allClearBtn = document.querySelector(".allClear");
 const clearBtn = document.querySelector(".clear");
 
 const digits = document.querySelectorAll(".digit");
@@ -91,7 +92,15 @@ equalSign.addEventListener("click", (e) => {
   displayArea.textContent = displayValue;
 });
 
-clearBtn.addEventListener("click", () => {
+allClearBtn.addEventListener("click", () => {
   displayValue = "0";
   displayArea.textContent = "0";
+});
+
+clearBtn.addEventListener("click", () => {
+  displayValue = displayValue.slice(0, displayValue.length - 1);
+  if (displayValue === "") {
+    displayValue = "0";
+  }
+  displayArea.textContent = displayValue;
 });
