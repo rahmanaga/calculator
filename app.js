@@ -30,3 +30,16 @@ const operate = function (operator, num1, num2) {
   }
   return result;
 };
+let displayValue = "0";
+
+const digits = document.querySelectorAll(".digit");
+
+digits.forEach((digit) => {
+  digit.addEventListener("click", (e) => {
+    if (displayValue === "0") {
+      displayValue = e.target.textContent;
+    } else {
+      displayValue += e.target.textContent;
+    }
+  });
+});
