@@ -31,9 +31,10 @@ const operate = function (operator, num1, num2) {
     default:
       break;
   }
-
-  if (`${result}`.length > 7) {
-    return `${result.toFixed(5)}`;
+  if (typeof result === "number") {
+    if (`${result}`.length > 7) {
+      return `${result.toFixed(5)}`;
+    }
   }
   return `${result}`;
 };
@@ -45,18 +46,24 @@ const decimalBtn = document.querySelector(".decimal");
 
 const digits = document.querySelectorAll(".digit");
 
-digits.forEach((digit) => {
-  digit.addEventListener("click", (e) => {
+const digitHandler = (e) => {
+  if (e.type === "click") {
     if (displayValue === "0") {
       displayValue = e.target.textContent;
     } else {
       displayValue += e.target.textContent;
     }
-    displayArea.textContent = displayValue;
-  });
-});
+  } else if (e.type === "keyup") {
+    if (displayValue === "0") {
+      displayValue = e.key;
+    } else {
+      displayValue += e.key;
+    }
+  }
+  displayArea.textContent = displayValue;
+};
 
-decimalBtn.addEventListener("click", (e) => {
+const decimalHandler = () => {
   if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
     displayValue += "0.";
   } else if (/[\.]/.test(displayValue)) {
@@ -73,15 +80,13 @@ decimalBtn.addEventListener("click", (e) => {
     displayValue += ".";
   }
   displayArea.textContent = displayValue;
-});
+};
 
-const operators = document.querySelectorAll(".operator");
-
-operators.forEach((operator) => {
-  operator.addEventListener("click", (e) => {
-    if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
-      return;
-    }
+const operatorHandler = (e) => {
+  if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
+    return;
+  }
+  if (e.type === "click") {
     if (/[\+\-\*/]/.test(displayValue)) {
       const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
       const [num1, num2] = displayValue.split(matchedOperator);
@@ -95,13 +100,25 @@ operators.forEach((operator) => {
     } else {
       displayValue += e.target.textContent;
     }
-    displayArea.textContent = displayValue;
-  });
-});
+  } else if (e.type === "keyup") {
+    if (/[\+\-\*/]/.test(displayValue)) {
+      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+      const [num1, num2] = displayValue.split(matchedOperator);
+      displayValue = operate(matchedOperator, +num1, +num2);
+      if (/Couldn't divide by zero/.test(displayValue)) {
+        alert("Couldn't divide by zero");
+        displayValue = "";
+      } else {
+        displayValue += e.key;
+      }
+    } else {
+      displayValue += e.key;
+    }
+  }
+  displayArea.textContent = displayValue;
+};
 
-const equalSign = document.querySelector(".equal");
-
-equalSign.addEventListener("click", (e) => {
+const equalHandler = () => {
   if (/[0-9][\+\-\*/][0-9]/.test(displayValue)) {
     const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
     const [num1, num2] = displayValue.split(matchedOperator);
@@ -114,17 +131,48 @@ equalSign.addEventListener("click", (e) => {
     displayValue = "0";
   }
   displayArea.textContent = displayValue;
+};
+const deleteHandler = () => {
+  displayValue = displayValue.slice(0, displayValue.length - 1);
+  if (displayValue === "") {
+    displayValue = "0";
+  }
+  displayArea.textContent = displayValue;
+};
+window.addEventListener("keyup", (e) => {
+  console.log(e.key);
+  if (/[0-9]/.test(e.key)) {
+    digitHandler(e);
+  } else if (/[\.]/.test(e.key)) {
+    decimalHandler();
+  } else if (/[\+\-\*/]/.test(e.key)) {
+    operatorHandler(e);
+  } else if (/[=]/.test(e.key) || /Enter/.test(e.key)) {
+    equalHandler();
+  } else if (/Backspace/.test(e.key)) {
+    deleteHandler();
+  }
 });
+
+digits.forEach((digit) => {
+  digit.addEventListener("click", digitHandler);
+});
+
+decimalBtn.addEventListener("click", decimalHandler);
+
+const operators = document.querySelectorAll(".operator");
+
+operators.forEach((operator) => {
+  operator.addEventListener("click", operatorHandler);
+});
+
+const equalSign = document.querySelector(".equal");
+
+equalSign.addEventListener("click", equalHandler);
 
 allClearBtn.addEventListener("click", () => {
   displayValue = "0";
   displayArea.textContent = "0";
 });
 
-clearBtn.addEventListener("click", () => {
-  displayValue = displayValue.slice(0, displayValue.length - 1);
-  if (displayValue === "") {
-    displayValue = "0";
-  }
-  displayArea.textContent = displayValue;
-});
+clearBtn.addEventListener("click", deleteHandler);
