@@ -64,7 +64,10 @@ const digitHandler = (e) => {
 };
 
 const decimalHandler = () => {
-  if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
+  if (
+    /[\+\-\*/]/.test(displayValue[displayValue.length - 1]) ||
+    displayValue === ""
+  ) {
     displayValue += "0.";
   } else if (/[\.]/.test(displayValue)) {
     if (/[\+\-\*/]/.test(displayValue)) {
@@ -101,6 +104,9 @@ const operatorHandler = (e) => {
       displayValue += e.target.textContent;
     }
   } else if (e.type === "keyup") {
+    if (e.key === "/") {
+      e.preventDefault();
+    }
     if (/[\+\-\*/]/.test(displayValue)) {
       const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
       const [num1, num2] = displayValue.split(matchedOperator);
@@ -135,7 +141,8 @@ const equalHandler = () => {
 const deleteHandler = () => {
   displayValue = displayValue.slice(0, displayValue.length - 1);
   if (displayValue === "") {
-    displayValue = "0";
+    displayArea.textContent = displayValue;
+    return;
   }
   displayArea.textContent = displayValue;
 };
@@ -171,8 +178,8 @@ const equalSign = document.querySelector(".equal");
 equalSign.addEventListener("click", equalHandler);
 
 allClearBtn.addEventListener("click", () => {
-  displayValue = "0";
-  displayArea.textContent = "0";
+  displayValue = "";
+  displayArea.textContent = "";
 });
 
 clearBtn.addEventListener("click", deleteHandler);
