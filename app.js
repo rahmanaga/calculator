@@ -91,13 +91,11 @@ const checkNegative = () => {
     const num1 = displayValue.match(/-[0-9.]+/)[0];
     const num2 = displayValue.match(/.-[0-9.]+/)[0].slice(1);
     const operator = displayValue.match(/.-[0-9.]+/)[0][0];
-    console.log(num1, num2, operator);
     displayValue = operate(operator, +num1, +num2);
   } else if (/-[0-9.]+[\+\-\*/][0-9.]+/.test(displayValue)) {
     const num1 = displayValue.match(/-[0-9.]+/)[0];
     const num2 = displayValue.slice(num1.length + 1);
     const operator = displayValue.slice(1).match(/[^0-9.][0-9.]+/)[0][0];
-    console.log(num1, num2, operator);
     displayValue = operate(operator, +num1, +num2);
   } else if (/[0-9.]+[\+\-\*/]-[0-9.]+/) {
     const num1 = displayValue.match(/[0-9.]+/)[0];
@@ -180,8 +178,7 @@ const equalHandler = (e) => {
       displayValue = "";
     }
   } else {
-    console.log("hi");
-    displayValue = "0";
+    displayValue = "";
   }
   displayArea.textContent = displayValue;
 };
@@ -196,13 +193,13 @@ const deleteHandler = () => {
 window.addEventListener("keyup", (e) => {
   if (/[0-9]/.test(e.key)) {
     digitHandler(e);
-  } else if (/[\.]/.test(e.key)) {
+  } else if (e.key === ".") {
     decimalHandler();
   } else if (REGEX_OPERATOR.test(e.key)) {
     operatorHandler(e);
-  } else if (/[=]/.test(e.key) || /Enter/.test(e.key)) {
+  } else if (e.key === "=" || e.key === "Enter") {
     equalHandler(e);
-  } else if (/Backspace/.test(e.key)) {
+  } else if (e.key === "Backspace") {
     deleteHandler();
   }
 });
