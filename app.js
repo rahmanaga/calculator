@@ -38,14 +38,15 @@ const operate = function (operator, num1, num2) {
   }
   return `${result}`;
 };
-let displayValue = "0";
+
+let displayValue = "";
 const displayArea = document.querySelector(".display");
 const allClearBtn = document.querySelector(".allClear");
 const clearBtn = document.querySelector(".clear");
 const decimalBtn = document.querySelector(".decimal");
 
 const digits = document.querySelectorAll(".digit");
-
+const REGEX_OPERATOR = /[\+\-\*/]/;
 const digitHandler = (e) => {
   if (e.type === "click") {
     if (displayValue === "0") {
@@ -65,13 +66,13 @@ const digitHandler = (e) => {
 
 const decimalHandler = () => {
   if (
-    /[\+\-\*/]/.test(displayValue[displayValue.length - 1]) ||
+    REGEX_OPERATOR.test(displayValue[displayValue.length - 1]) ||
     displayValue === ""
   ) {
     displayValue += "0.";
   } else if (/[\.]/.test(displayValue)) {
-    if (/[\+\-\*/]/.test(displayValue)) {
-      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+    if (REGEX_OPERATOR.test(displayValue)) {
+      const [matchedOperator] = displayValue.match(REGEX_OPERATOR);
       const lastNum = displayValue.split(matchedOperator)[1];
       if (/[\.]/.test(lastNum)) {
         return;
@@ -85,15 +86,43 @@ const decimalHandler = () => {
   displayArea.textContent = displayValue;
 };
 
+const checkNegative = () => {
+  if (/-[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue)) {
+    const num1 = displayValue.match(/-[0-9.]+/)[0];
+    const num2 = displayValue.match(/.-[0-9.]+/)[0].slice(1);
+    const operator = displayValue.match(/.-[0-9.]+/)[0][0];
+    console.log(num1, num2, operator);
+    displayValue = operate(operator, +num1, +num2);
+  } else if (/-[0-9.]+[\+\-\*/][0-9.]+/.test(displayValue)) {
+    const num1 = displayValue.match(/-[0-9.]+/)[0];
+    const num2 = displayValue.slice(num1.length + 1);
+    const operator = displayValue.slice(1).match(/[^0-9.][0-9.]+/)[0][0];
+    console.log(num1, num2, operator);
+    displayValue = operate(operator, +num1, +num2);
+  } else if (/[0-9.]+[\+\-\*/]-[0-9.]+/) {
+    const num1 = displayValue.match(/[0-9.]+/)[0];
+    const num2 = displayValue.slice(1).match(/-[0-9.]+/)[0];
+    const operator = displayValue.slice(1).match(/.-[0-9.]+/)[0][0];
+    displayValue = operate(operator, +num1, +num2);
+  }
+};
 const operatorHandler = (e) => {
-  if (/[\+\-\*/]/.test(displayValue[displayValue.length - 1])) {
+  if (REGEX_OPERATOR.test(displayValue[displayValue.length - 1])) {
     return;
   }
   if (e.type === "click") {
-    if (/[\+\-\*/]/.test(displayValue)) {
-      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
-      const [num1, num2] = displayValue.split(matchedOperator);
-      displayValue = operate(matchedOperator, +num1, +num2);
+    if (REGEX_OPERATOR.test(displayValue)) {
+      if (
+        /-[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue) ||
+        /-[0-9.]+[\+\-\*/][0-9.]+/.test(displayValue) ||
+        /[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue)
+      ) {
+        checkNegative();
+      } else if (/[0-9]+[\+\-\*/][0-9]+/) {
+        const [matchedOperator] = displayValue.match(REGEX_OPERATOR);
+        const [num1, num2] = displayValue.split(matchedOperator);
+        displayValue = operate(matchedOperator, +num1, +num2);
+      }
       if (/Couldn't divide by zero/.test(displayValue)) {
         alert("Couldn't divide by zero");
         displayValue = "";
@@ -104,13 +133,21 @@ const operatorHandler = (e) => {
       displayValue += e.target.textContent;
     }
   } else if (e.type === "keyup") {
-    if (e.key === "/") {
+    if (e.key === "/" || e.key === "Enter") {
       e.preventDefault();
     }
-    if (/[\+\-\*/]/.test(displayValue)) {
-      const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
-      const [num1, num2] = displayValue.split(matchedOperator);
-      displayValue = operate(matchedOperator, +num1, +num2);
+    if (REGEX_OPERATOR.test(displayValue)) {
+      if (
+        /-[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue) ||
+        /-[0-9.]+[\+\-\*/][0-9.]+/.test(displayValue) ||
+        /[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue)
+      ) {
+        checkNegative();
+      } else if (/[0-9]+[\+\-\*/][0-9]+/) {
+        const [matchedOperator] = displayValue.match(REGEX_OPERATOR);
+        const [num1, num2] = displayValue.split(matchedOperator);
+        displayValue = operate(matchedOperator, +num1, +num2);
+      }
       if (/Couldn't divide by zero/.test(displayValue)) {
         alert("Couldn't divide by zero");
         displayValue = "";
@@ -124,9 +161,18 @@ const operatorHandler = (e) => {
   displayArea.textContent = displayValue;
 };
 
-const equalHandler = () => {
-  if (/[0-9][\+\-\*/][0-9]/.test(displayValue)) {
-    const [matchedOperator] = displayValue.match(/[\+\-\*/]/);
+const equalHandler = (e) => {
+  if (e.key === "/" || e.key === "Enter") {
+    e.preventDefault();
+  }
+  if (
+    /-[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue) ||
+    /-[0-9.]+[\+\-\*/][0-9.]+/.test(displayValue) ||
+    /[0-9.]+[\+\-\*/]-[0-9.]+/.test(displayValue)
+  ) {
+    checkNegative();
+  } else if (/[0-9][\+\-\*/][0-9]/.test(displayValue)) {
+    const [matchedOperator] = displayValue.match(REGEX_OPERATOR);
     const [num1, num2] = displayValue.split(matchedOperator);
     displayValue = operate(matchedOperator, +num1, +num2);
     if (/Couldn't divide by zero/.test(displayValue)) {
@@ -134,6 +180,7 @@ const equalHandler = () => {
       displayValue = "";
     }
   } else {
+    console.log("hi");
     displayValue = "0";
   }
   displayArea.textContent = displayValue;
@@ -147,15 +194,14 @@ const deleteHandler = () => {
   displayArea.textContent = displayValue;
 };
 window.addEventListener("keyup", (e) => {
-  console.log(e.key);
   if (/[0-9]/.test(e.key)) {
     digitHandler(e);
   } else if (/[\.]/.test(e.key)) {
     decimalHandler();
-  } else if (/[\+\-\*/]/.test(e.key)) {
+  } else if (REGEX_OPERATOR.test(e.key)) {
     operatorHandler(e);
   } else if (/[=]/.test(e.key) || /Enter/.test(e.key)) {
-    equalHandler();
+    equalHandler(e);
   } else if (/Backspace/.test(e.key)) {
     deleteHandler();
   }
@@ -183,3 +229,18 @@ allClearBtn.addEventListener("click", () => {
 });
 
 clearBtn.addEventListener("click", deleteHandler);
+
+const minus = document.querySelector(".plusMinus");
+
+minus.addEventListener("click", () => {
+  if (displayValue[displayValue.length - 1] !== "-") {
+    displayValue += "-";
+  } else {
+    if (REGEX_OPERATOR.test(displayValue[displayValue.length - 2])) {
+      displayValue = displayValue.slice(0, displayValue.length - 1);
+    } else {
+      displayValue += "-";
+    }
+  }
+  displayArea.textContent = displayValue;
+});
